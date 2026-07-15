@@ -1,0 +1,210 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Outfit', sans-serif;
+  
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-secondary: var(--secondary);
+  --color-accent: var(--accent);
+  --color-background: var(--background);
+  --color-card: var(--card);
+  --color-border: var(--border);
+  --color-text-main: var(--text-main);
+  --color-text-muted: var(--text-muted);
+  --color-success: #2E7D32;
+  --color-warning: #FFA726;
+  --color-danger: #EF5350;
+  
+  --radius-custom: 24px;
+}
+
+:root {
+  --primary: #1B4D3E;        /* Deep Forest Emerald */
+  --primary-hover: #11352A;  /* Deep Pine */
+  --secondary: #40916C;      /* Medium Leaf Green */
+  --accent: #D8F3DC;         /* Creamy Sage Mint */
+  --background: #F4F9F4;     /* Sage Ice (Ultra premium light background) */
+  --card: #FFFFFF;
+  --border: #E1EBE0;         /* Leaf Vein Grey */
+  --text-main: #14281E;      /* Midnight Spruce */
+  --text-muted: #5C7C6D;      /* Eucalyptus Grey */
+  color-scheme: light;
+}
+
+:root.dark {
+  --primary: #52B788;        /* Soft Mint Emerald */
+  --primary-hover: #74C69D;  /* Pale Green Mint */
+  --secondary: #2D6A4F;      /* Deep Forest Leaf */
+  --accent: #1B4332;         /* Dark Spruce */
+  --background: #080E0A;     /* Obsidian Forest Black */
+  --card: #0F1712;           /* Deep Jade Black Card */
+  --border: #1E2E23;         /* Dark Sage Border */
+  --text-main: #E9F5EB;      /* Pale Eucalyptus */
+  --text-muted: #8AA899;      /* Sage Green Grey */
+  color-scheme: dark;
+}
+
+/* Base custom styles */
+body {
+  font-family: var(--font-sans);
+  background-color: var(--background);
+  color: var(--text-main);
+  transition: background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, color 0.3s ease;
+  overflow-x: hidden;
+}
+
+/* Upgrade Glassmorphism to Premium */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.dark .glass-effect {
+  background: rgba(15, 23, 18, 0.45);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+/* Premium shadows inspired by Apple interfaces */
+.shadow-soft {
+  box-shadow: 0 12px 40px -12px rgba(27, 77, 62, 0.05);
+}
+
+.dark .shadow-soft {
+  box-shadow: 0 16px 48px -12px rgba(0, 0, 0, 0.45);
+}
+
+.shadow-hover {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.shadow-hover:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 30px 60px -15px rgba(27, 77, 62, 0.12);
+}
+
+.dark .shadow-hover:hover {
+  box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.65);
+}
+
+/* Floating animation utilities */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(0.5deg);
+  }
+}
+
+@keyframes float-slow {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(6px) rotate(-0.5deg);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-slow {
+  animation: float-slow 8s ease-in-out infinite;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Print layout styles */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-area {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+  }
+}
+
+/* Micro-interactions Keyframes */
+@keyframes bell-ring {
+  0%, 100% { transform: rotate(0deg); }
+  5%, 15%, 25% { transform: rotate(8deg); }
+  10%, 20%, 30% { transform: rotate(-8deg); }
+  35% { transform: rotate(4deg); }
+  40% { transform: rotate(-4deg); }
+  45%, 95% { transform: rotate(0deg); }
+}
+
+.animate-bell {
+  animation: bell-ring 3.5s ease-in-out infinite;
+  transform-origin: top center;
+}
+
+@keyframes success-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(46, 125, 50, 0.4); }
+  70% { box-shadow: 0 0 0 8px rgba(46, 125, 50, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(46, 125, 50, 0); }
+}
+
+.animate-success-pulse {
+  animation: success-pulse 1s cubic-bezier(0.24, 0, 0.38, 1);
+}
+
+@keyframes draw-line {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+.animate-draw-line {
+  position: relative;
+}
+.animate-draw-line::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  height: 1.5px;
+  background-color: var(--text-muted);
+  animation: draw-line 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
