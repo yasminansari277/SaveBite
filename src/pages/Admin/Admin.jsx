@@ -147,15 +147,15 @@ const Admin = () => {
       {/* 1. Analytics Dashboard Tab */}
       {activeTab === 'analytics' && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="border border-border/80 text-center flex flex-col gap-2 p-5 bg-gradient-to-br from-card to-background/35">
+          <Card className="border border-border/80 text-center flex flex-col gap-2 p-5 bg-linear-to-br from-card to-background/35">
             <span className="text-3xl font-bold font-display text-text-main">{simUsers.length}</span>
             <span className="text-xs text-text-muted">Total Registered Users</span>
           </Card>
-          <Card className="border border-border/80 text-center flex flex-col gap-2 p-5 bg-gradient-to-br from-card to-background/35">
+          <Card className="border border-border/80 text-center flex flex-col gap-2 p-5 bg-linear-to-br from-card to-background/35">
             <span className="text-3xl font-bold font-display text-text-main">{recipes.length}</span>
             <span className="text-xs text-text-muted">Master Recipes Indexed</span>
           </Card>
-          <Card className="border border-border/80 text-center flex flex-col gap-2 p-5 bg-gradient-to-br from-card to-background/35">
+          <Card className="border border-border/80 text-center flex flex-col gap-2 p-5 bg-linear-to-br from-card to-background/35">
             <span className="text-3xl font-bold font-display text-text-main">{categories.length}</span>
             <span className="text-xs text-text-muted">Inventory Categories</span>
           </Card>
