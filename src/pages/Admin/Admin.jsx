@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { usePantry } from '../../context/PantryContext';
-import { useAuth } from '../../context/AuthContext';
+import { getUsers, deleteUser } from '../../services/firebase/auth';
 import { 
   IoStatsChartOutline, IoPeopleOutline, IoRestaurantOutline, 
-  IoGridOutline, IoTrashOutline, IoAddOutline 
+  IoGridOutline, IoTrashOutline
 } from 'react-icons/io5';
 import Card from '../../components/ui/Card';
 import Badge from '../../components/ui/Badge';
@@ -11,7 +11,6 @@ import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 
 const Admin = () => {
-  const { isSimulationMode } = useAuth();
   const { 
     recipes, 
     categories, 
@@ -34,22 +33,14 @@ const Admin = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Simulation Users
-  const getSimulatedUsersList = () => {
-    if (!isSimulationMode) return [{ uid: '1', displayName: 'Firebase User', email: 'user@firebase.com', role: 'user' }];
-    const users = localStorage.getItem('savebite_users');
-    return users ? JSON.parse(users) : [];
-  };
-
-  const [simUsers, setSimUsers] = useState(getSimulatedUsersList());
+  const [simUsers, setSimUsers] = useState(getUsers());
 
   // Delete User (Simulation)
   const handleDeleteUser = (uid) => {
     if (window.confirm('Delete this user account?')) {
       const updated = simUsers.filter(u => u.uid !== uid);
       setSimUsers(updated);
-      if (isSimulationMode) {
-        localStorage.setItem('savebite_users', JSON.stringify(updated));
-      }
+      deleteUser(uid);
       alert('User deleted.');
     }
   };

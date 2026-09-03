@@ -11,10 +11,7 @@ const Navbar = ({ toggleSidebar, title = 'Dashboard' }) => {
   const { pantryItems, recipes, categories, notifications, markNotificationRead } = usePantry();
   
   // Theme State
-  const [darkMode, setDarkMode] = useState(
-    localStorage.getItem('savebite_theme') === 'dark' ||
-    (!localStorage.getItem('savebite_theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)
-  );
+  const [darkMode, setDarkMode] = useState(() => window.matchMedia('(prefers-color-scheme: dark)').matches);
 
   // Search States
   const [searchQuery, setSearchQuery] = useState('');
@@ -32,10 +29,8 @@ const Navbar = ({ toggleSidebar, title = 'Dashboard' }) => {
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add('dark');
-      localStorage.setItem('savebite_theme', 'dark');
     } else {
       document.documentElement.classList.remove('dark');
-      localStorage.setItem('savebite_theme', 'light');
     }
   }, [darkMode]);
 

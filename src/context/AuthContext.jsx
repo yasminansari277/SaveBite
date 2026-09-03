@@ -4,10 +4,10 @@ import {
   loginUser, 
   loginWithGoogle, 
   logoutUser, 
-  resetPassword, 
-  onAuthStateChangedListener 
+  resetPassword,
+  onAuthStateChangedListener,
+  updateUser
 } from '../services/firebase/auth';
-import { isSimulationMode } from '../services/firebase/config';
 
 const AuthContext = createContext();
 
@@ -61,12 +61,12 @@ export const AuthProvider = ({ children }) => {
   const value = {
     currentUser,
     loading,
-    isSimulationMode,
     signUp,
     login,
     loginWithGoogle: signInGoogle,
     logout,
-    resetPassword: sendPasswordReset
+    resetPassword: sendPasswordReset,
+    updateUser
   };
 
   return (

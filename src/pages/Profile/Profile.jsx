@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { IoPersonOutline, IoMoonOutline, IoSunnyOutline, IoGlobeOutline, IoLogOutOutline } from 'react-icons/io5';
+import { IoPersonOutline, IoMoonOutline, IoSunnyOutline, IoGlobeOutline } from 'react-icons/io5';
 import Card from '../../components/ui/Card';
 import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 
 const Profile = () => {
-  const { currentUser, logout, isSimulationMode } = useAuth();
+  const { currentUser, updateUser } = useAuth();
   
   // Settings states
   const [name, setName] = useState(currentUser?.displayName || '');
@@ -24,10 +24,8 @@ const Profile = () => {
     setDarkMode(isDark);
     if (isDark) {
       document.documentElement.classList.add('dark');
-      localStorage.setItem('savebite_theme', 'dark');
     } else {
       document.documentElement.classList.remove('dark');
-      localStorage.setItem('savebite_theme', 'light');
     }
   };
 
@@ -45,17 +43,7 @@ const Profile = () => {
     setIsUpdating(true);
     setTimeout(() => {
       setIsUpdating(false);
-      // Simulate profile updates in localstorage
-      if (isSimulationMode) {
-        const users = JSON.parse(localStorage.getItem('savebite_users')) || [];
-        const index = users.findIndex(u => u.uid === currentUser.uid);
-        if (index !== -1) {
-          users[index].displayName = name;
-          users[index].photoURL = selectedAvatar;
-          localStorage.setItem('savebite_users', JSON.stringify(users));
-          localStorage.setItem('savebite_current_user', JSON.stringify(users[index]));
-        }
-      }
+      updateUser(currentUser.uid, { displayName: name, photoURL: selectedAvatar });
       alert('Profile updated successfully!');
       window.location.reload(); // Refresh session layout
     }, 800);
@@ -77,7 +65,6 @@ const Profile = () => {
             <span className="text-xs text-text-muted">{currentUser?.email}</span>
             <div className="mt-2 flex justify-center gap-1.5">
               <Badge variant="success" size="sm">{currentUser?.role?.toUpperCase() || 'USER'}</Badge>
-              {isSimulationMode && <Badge variant="neutral" size="sm">SIM MODE</Badge>}
             </div>
           </div>
         </Card>
