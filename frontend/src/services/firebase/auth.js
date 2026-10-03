@@ -1,17 +1,6 @@
 // Authentication is intentionally session-only. Reloading the page signs the user out.
 const users = [];
 let currentUser = null;
-let authCallbacks = [];
-
-const notifyAuthChange = (user) => {
-  authCallbacks.forEach(cb => {
-    try {
-      cb(user);
-    } catch (err) {
-      console.error('Error running auth observer:', err);
-    }
-  });
-};
 
 const saveUser = (user) => {
   if (!users.some(existingUser => existingUser.uid === user.uid)) {
@@ -21,34 +10,100 @@ const saveUser = (user) => {
 
 const setCurrentUser = (user) => {
   currentUser = user;
-  notifyAuthChange(user);
 };
 
+
 // 1. Sign Up
-export const signUpUser = async (email, _password, displayName) => {
-  if (users.some(user => user.email.toLowerCase() === email.toLowerCase())) {
-    throw new Error('auth/email-already-in-use');
+export const signUpUser = async (email, password, displayName) => {
+  const response = await fetch(
+    "http://localhost/savebite/backend/auth/register.php",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        name: displayName,
+        email: email,
+        password: password,
+      }),
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok || !data.success) {
+    const error = new Error(data.message || "Registration failed.");
+
+    if (data.message === "Email is already registered.") {
+      error.code = "auth/email-already-in-use";
+    }
+
+    throw error;
   }
+
   const user = {
-    uid: 'user_' + Math.random().toString(36).slice(2, 11),
-    email,
-    displayName: displayName || email.split('@')[0],
-    photoURL: `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(displayName || email)}`,
-    role: email.toLowerCase().includes('admin') ? 'admin' : 'user',
-    createdAt: new Date().toISOString()
+    uid: String(data.user.id),
+    email: data.user.email,
+    displayName: data.user.name,
+    photoURL: `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(
+      data.user.name
+    )}`,
+    role: data.user.email.toLowerCase().includes("admin")
+      ? "admin"
+      : "user",
+    createdAt: new Date().toISOString(),
   };
-  saveUser(user);
+
   setCurrentUser(user);
+
   return { user };
 };
 
 // 2. Log In
-export const loginUser = async (email, _password) => {
-  const user = users.find(candidate => candidate.email.toLowerCase() === email.toLowerCase());
-  if (!user) {
-    throw new Error('auth/user-not-found');
+export const loginUser = async (email, password) => {
+  const response = await fetch(
+    "http://localhost/savebite/backend/auth/login.php",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        email: email,
+        password: password,
+      }),
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok || !data.success) {
+    const error = new Error(data.message || "Login failed.");
+
+    if (data.message === "User not found.") {
+      error.code = "auth/user-not-found";
+    } else if (data.message === "Invalid email or password.") {
+      error.code = "auth/invalid-credential";
+    }
+
+    throw error;
   }
+
+  const user = {
+    uid: String(data.user.id),
+    email: data.user.email,
+    displayName: data.user.name,
+    role: data.user.role,
+    photoURL: `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(
+      data.user.name
+    )}`,
+  };
+
   setCurrentUser(user);
+
   return { user };
 };
 
@@ -67,9 +122,28 @@ export const loginWithGoogle = async () => {
   return { user };
 };
 
+
 // 4. Log Out
 export const logoutUser = async () => {
+  const response = await fetch(
+    "http://localhost/savebite/backend/auth/logout.php",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok || !data.success) {
+    throw new Error(data.message || "Logout failed.");
+  }
+
   setCurrentUser(null);
+
   return true;
 };
 
@@ -78,14 +152,6 @@ export const resetPassword = async (email) => {
   return Boolean(email);
 };
 
-// 6. Observe Auth Changes
-export const onAuthStateChangedListener = (callback) => {
-  authCallbacks.push(callback);
-  callback(currentUser);
-  return () => {
-    authCallbacks = authCallbacks.filter(cb => cb !== callback);
-  };
-};
 
 export const getUsers = () => [...users];
 

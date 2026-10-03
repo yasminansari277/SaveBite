@@ -5,7 +5,6 @@ import {
   loginWithGoogle, 
   logoutUser, 
   resetPassword,
-  onAuthStateChangedListener,
   updateUser
 } from '../services/firebase/auth';
 
@@ -17,34 +16,60 @@ export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChangedListener((user) => {
-      if (user) {
-        // Double check roles: admin vs standard user
-        const isAdmin = user.email && (
-          user.email.toLowerCase() === 'admin@savebite.com' || 
-          user.email.toLowerCase().includes('admin')
-        );
-        setCurrentUser({
-          ...user,
-          role: isAdmin ? 'admin' : 'user'
-        });
+ useEffect(() => {
+  const checkSession = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost/savebite/backend/auth/session.php",
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.success && data.loggedIn) {
+        const user = {
+          uid: String(data.user.id),
+          email: data.user.email,
+          displayName: data.user.name,
+          role: data.user.role,
+          photoURL: `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(
+            data.user.name
+          )}`,
+        };
+
+        setCurrentUser(user);
       } else {
         setCurrentUser(null);
       }
+    } catch (error) {
+      console.error("Session check failed:", error);
+      setCurrentUser(null);
+    } finally {
       setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  const signUp = async (email, password, displayName) => {
-    return await signUpUser(email, password, displayName);
+    }
   };
+
+  checkSession();
+}, []);
+
+const signUp = async (email, password, displayName) => {
+  const result = await signUpUser(email, password, displayName);
+
+  setCurrentUser(result.user);
+
+  return result;
+};
 
   const login = async (email, password) => {
-    return await loginUser(email, password);
-  };
+  const result = await loginUser(email, password);
+
+  setCurrentUser(result.user);
+
+  return result;
+};
 
   const signInGoogle = async () => {
     return await loginWithGoogle();

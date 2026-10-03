@@ -22,12 +22,16 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   const unreadNotificationsCount = notifications.filter(n => !n.read).length;
 
   const handleLogout = async () => {
-    try {
-      await logout();
-    } catch (error) {
-      console.error('Logout failed:', error);
-    }
-  };
+  try {
+    await logout();
+
+    console.log("Logout successful");
+
+    window.location.href = "/login";
+  } catch (error) {
+    console.error("Logout error:", error);
+  }
+};
 
   const navItems = [
     { name: 'Dashboard', path: '/dashboard', iconOutline: IoHomeOutline, iconSolid: IoHome },

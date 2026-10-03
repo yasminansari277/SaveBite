@@ -26,11 +26,11 @@
   --primary-hover: #11352A;  /* Deep Pine */
   --secondary: #40916C;      /* Medium Leaf Green */
   --accent: #D8F3DC;         /* Creamy Sage Mint */
-  --background: #F4F9F4;     /* Sage Ice (Ultra premium light background) */
+  --background: #EEF4EF;     /* Soft sage canvas */
   --card: #FFFFFF;
-  --border: #E1EBE0;         /* Leaf Vein Grey */
+  --border: #D6E2D7;         /* Clearer separation between surfaces */
   --text-main: #14281E;      /* Midnight Spruce */
-  --text-muted: #5C7C6D;      /* Eucalyptus Grey */
+  --text-muted: #526B5D;      /* Eucalyptus Grey */
   color-scheme: light;
 }
 
@@ -40,10 +40,10 @@
   --secondary: #2D6A4F;      /* Deep Forest Leaf */
   --accent: #1B4332;         /* Dark Spruce */
   --background: #080E0A;     /* Obsidian Forest Black */
-  --card: #0F1712;           /* Deep Jade Black Card */
-  --border: #1E2E23;         /* Dark Sage Border */
+  --card: #121D16;           /* Lifted jade surface */
+  --border: #2A3B2F;         /* Visible dark sage edge */
   --text-main: #E9F5EB;      /* Pale Eucalyptus */
-  --text-muted: #8AA899;      /* Sage Green Grey */
+  --text-muted: #A0B9A9;      /* Sage Green Grey */
   color-scheme: dark;
 }
 
@@ -73,11 +73,15 @@ body {
 
 /* Premium shadows inspired by Apple interfaces */
 .shadow-soft {
-  box-shadow: 0 12px 40px -12px rgba(27, 77, 62, 0.05);
+  box-shadow: 0 1px 2px rgba(20, 40, 30, 0.04),
+              0 8px 24px -12px rgba(27, 77, 62, 0.18),
+              inset 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
 .dark .shadow-soft {
-  box-shadow: 0 16px 48px -12px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.035),
+              0 12px 30px -14px rgba(0, 0, 0, 0.8),
+              inset 0 1px 0 rgba(255,  255, 255, 0.025);
 }
 
 .shadow-hover {
@@ -86,11 +90,14 @@ body {
 
 .shadow-hover:hover {
   transform: translateY(-6px);
-  box-shadow: 0 30px 60px -15px rgba(27, 77, 62, 0.12);
+  box-shadow: 0 18px 36px -14px rgba(27, 77, 62, 0.24),
+              inset 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
 .dark .shadow-hover:hover {
-  box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.65);
+  box-shadow: 0 20px 40px -14px rgba(0, 0, 0, 0.9),
+              0 0 0 1px rgba(82, 183, 136, 0.12),
+              inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 /* Floating animation utilities */
@@ -207,4 +214,3 @@ body {
   background-color: var(--text-muted);
   animation: draw-line 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
-
