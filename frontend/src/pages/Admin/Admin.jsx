@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { usePantry } from '../../context/PantryContext';
-import { getUsers, deleteUser } from '../../services/firebase/auth';
+
 import { 
   IoStatsChartOutline, IoPeopleOutline, IoRestaurantOutline, 
   IoGridOutline, IoTrashOutline
@@ -32,18 +32,95 @@ const Admin = () => {
   const [recipeIngsText, setRecipeIngsText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Simulation Users
-  const [simUsers, setSimUsers] = useState(getUsers());
+  // Users from MySQL
+const [simUsers, setSimUsers] = useState([]);
+const [usersLoading, setUsersLoading] = useState(false);
 
-  // Delete User (Simulation)
-  const handleDeleteUser = (uid) => {
-    if (window.confirm('Delete this user account?')) {
-      const updated = simUsers.filter(u => u.uid !== uid);
-      setSimUsers(updated);
-      deleteUser(uid);
-      alert('User deleted.');
+  // Fetch users from PHP + MySQL
+const fetchUsers = async () => {
+  setUsersLoading(true);
+
+  try {
+    const response = await fetch(
+      'http://localhost/savebite/backend/users/user.php',
+      {
+        method: 'GET',
+        credentials: 'include',
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || 'Failed to fetch users.');
     }
-  };
+
+    const formattedUsers = data.users.map(user => ({
+      uid: user.uid,
+      displayName: user.name,
+      email: user.email,
+
+      // Admin is identified by email for now
+      role: user.email.toLowerCase().includes('admin')
+        ? 'admin'
+        : 'user',
+
+      created_at: user.created_at,
+    }));
+
+    setSimUsers(formattedUsers);
+
+  } catch (error) {
+    console.error('Fetch users error:', error);
+    alert(error.message || 'Failed to load users.');
+  } finally {
+    setUsersLoading(false);
+  }
+};
+
+useEffect(() => {
+  fetchUsers();
+}, []);
+
+// Delete User from MySQL
+const handleDeleteUser = async (uid) => {
+  if (!window.confirm('Delete this user account?')) {
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      'http://localhost/savebite/backend/users/user.php',
+      {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          id: uid,
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || 'Failed to delete user.');
+    }
+
+    // Remove deleted user from UI
+    setSimUsers(prevUsers =>
+      prevUsers.filter(user => user.uid !== uid)
+    );
+
+    alert('User deleted successfully.');
+
+  } catch (error) {
+    console.error('Delete user error:', error);
+    alert(error.message || 'Failed to delete user.');
+  }
+};
 
   // Add Master Recipe submit
   const handleAddRecipeSubmit = async (e) => {
@@ -182,7 +259,23 @@ const Admin = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-border/40">
-              {simUsers.map(user => (
+               {usersLoading ? (
+                 <tr>
+                  <td
+                    colSpan="4" className="p-6 text-center text-text-muted">Loading users...
+                  </td>
+                </tr>
+        ) : simUsers.length === 0 ? (
+              <tr>
+                <td
+                  colSpan="4"
+                  className="p-6 text-center text-text-muted"
+                >
+                  No users found.
+                </td>
+              </tr>
+         ) : (
+            simUsers.map(user => (
                 <tr key={user.uid}>
                   <td className="p-4 font-bold text-text-main">{user.displayName || 'No Name'}</td>
                   <td className="p-4 text-text-muted text-xs font-semibold">{user.email}</td>
@@ -193,16 +286,17 @@ const Admin = () => {
                   </td>
                   <td className="p-4 text-right">
                     <button
-                      onClick={() => handleDeleteUser(user.uid)}
-                      className="p-1.5 rounded-full hover:bg-danger/10 text-danger transition-colors cursor-pointer"
-                      disabled={user.email === 'admin@savebite.com'}
-                      title="Remove User"
-                    >
-                      <IoTrashOutline className="text-base" />
-                    </button>
+  onClick={() => handleDeleteUser(user.uid)}
+  className="p-1.5 rounded-full hover:bg-danger/10 text-danger transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+  disabled={user.role === 'admin'}
+  title={user.role === 'admin' ? 'Admin account cannot be deleted' : 'Remove User'}
+>
+  <IoTrashOutline className="text-base" />
+</button>
                   </td>
                 </tr>
-              ))}
+              ))
+            )}
             </tbody>
           </table>
         </Card>

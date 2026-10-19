@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   IoLeafOutline, IoTimeOutline, IoRestaurantOutline, 
@@ -10,6 +11,8 @@ import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
 import Footer from '../../components/layout/Footer';
 import heroImg from '../../assets/hero.png';
+
+
 
 const Landing = () => {
   const navigate = useNavigate();
@@ -334,7 +337,7 @@ const Landing = () => {
   );
 };
 
-// Help fix Vite import issue since react-router-dom Link is needed
-import { Link } from 'react-router-dom';
+
+
 
 export default Landing;
